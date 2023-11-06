@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <CodeAnalysisRuleSet>StyleCop.ruleset</CodeAnalysisRuleSet>
+    <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);SA0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
