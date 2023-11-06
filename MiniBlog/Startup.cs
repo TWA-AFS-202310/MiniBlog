@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MiniBlog.Stores;
 
 namespace MiniBlog
 {
@@ -27,6 +28,9 @@ namespace MiniBlog
         {
             services.AddControllers();
             services.AddSwaggerGen();
+
+            services.AddSingleton<ArticleStore>(new ArticleStore());
+            services.AddSingleton<UserStore>(new UserStore());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +40,7 @@ namespace MiniBlog
             {
                 app.UseDeveloperExceptionPage();
             }
-             
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 

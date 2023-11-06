@@ -1,24 +1,33 @@
 ## Practice Requirement
 - Fork this repository
-- Remove duplicate code in ArticleController and UserController
 - Make all test cases pass
 
 #### Environment Requirement
-- .Net Core 3.1
+- .Net Core 7.0
 - Visual Studio
 
-####
-Reference:
-* https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-5.0
+#### Reference
+* https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-7.0
 
 #### Tips:
 Custom TestServer:
-```
-            Factory.WithWebHostBuilder(builder =>
+```c#
+        protected HttpClient GetClient(ArticleRepository articleRepository, UserRepository userRepository)
+        {
+            return Factory.WithWebHostBuilder(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    services.AddScoped((serviceProvider) => { return string.Empty; });
-                });
-            }).CreateClient();
+                builder.ConfigureServices(
+                    services =>
+                    {
+                        services.AddSingleton<ArticleRepository>(provider =>
+                        {
+                            return articleRepository;
+                        });
+                        services.AddSingleton<UserRepository>(provider =>
+                        {
+                            return userRepository;
+                        });
+                    });
+            }).CreateDefaultClient();
+        }
 ```

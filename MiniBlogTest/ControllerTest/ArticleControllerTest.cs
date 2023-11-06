@@ -19,8 +19,6 @@ namespace MiniBlogTest.ControllerTest
         public ArticleControllerTest(CustomWebApplicationFactory<Startup> factory)
             : base(factory)
         {
-            UserStoreWillReplaceInFuture.Init();
-            ArticleStoreWillReplaceInFuture.Init();
         }
 
         [Fact]
