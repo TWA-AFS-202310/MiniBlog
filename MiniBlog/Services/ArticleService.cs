@@ -13,20 +13,12 @@ public class ArticleService
     private readonly ArticleStore articleStore = null!;
     private readonly UserStore userStore = null!;
     private readonly IArticleRepository articleRepository = null!;
-    private IArticleRepository object1;
-    private IUserRepository object2;
+    private readonly IUserRepository userRepository = null!;
 
-    public ArticleService(IArticleRepository object1, IUserRepository object2)
+    public ArticleService(IArticleRepository articleRepository, IUserRepository userRepository)
     {
-        this.object1 = object1;
-        this.object2 = object2;
-    }
-
-    public ArticleService(ArticleStore articleStore, UserStore userStore, IArticleRepository articleRepository)
-    {
-        this.articleStore = articleStore;
-        this.userStore = userStore;
         this.articleRepository = articleRepository;
+        this.userRepository = userRepository;
     }
 
     public async Task<Article?> CreateArticle(Article article)

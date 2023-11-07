@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.TestHost;
 using MiniBlog;
 using MiniBlog.Model;
-using MiniBlog.Repositories;
 using MiniBlog.Stores;
-using Moq;
 using Newtonsoft.Json;
 using Xunit;
+using MiniBlog.Repositories;
+using Moq;
+using System;
+using MongoDB.Driver;
 
 namespace MiniBlogTest.ControllerTest
 {
@@ -26,6 +25,7 @@ namespace MiniBlogTest.ControllerTest
 
         private readonly ArticleStore articleStore;
         private readonly UserStore userStore;
+
         public ArticleControllerTest(CustomWebApplicationFactory<Startup> factory)
             : base(factory)
         {
@@ -91,7 +91,6 @@ namespace MiniBlogTest.ControllerTest
                                     });
             mockUserRepository.Setup(repo => repo.GetUserByName(It.IsAny<string>()))
                               .ReturnsAsync(new User("Tom"));
-
             string userNameWhoWillAdd = "Tom";
             string articleContent = "What a good day today!";
             string articleTitle = "Good day";
@@ -116,7 +115,7 @@ namespace MiniBlogTest.ControllerTest
             var usersJson = await userResponse.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<User>>(usersJson);
 
-            Assert.True(users.Count == 1);
+            Assert.Equal(1, users.Count);
             Assert.Equal(userNameWhoWillAdd, users[0].Name);
             Assert.Equal("anonymous@unknow.com", users[0].Email);
         }
