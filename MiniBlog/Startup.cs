@@ -10,7 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MiniBlog.Repositories;
+using MiniBlog.Services;
 using MiniBlog.Stores;
+using MongoDB.Driver;
 
 namespace MiniBlog
 {
@@ -31,6 +34,12 @@ namespace MiniBlog
 
             services.AddSingleton<ArticleStore>(new ArticleStore());
             services.AddSingleton<UserStore>(new UserStore());
+            services.AddScoped<ArticleService>();
+
+            var mongoClient = new MongoClient(Configuration.GetConnectionString("MongoDB"));
+            services.AddSingleton<IMongoClient>(mongoClient);
+
+            services.AddScoped<ArticleRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

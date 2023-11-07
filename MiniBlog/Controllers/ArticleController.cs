@@ -14,21 +14,17 @@ namespace MiniBlog.Controllers
     [Route("[controller]")]
     public class ArticleController : ControllerBase
     {
-        private readonly ArticleStore articleStore = null!;
-        private readonly UserStore userStore = null!;
         private readonly ArticleService articleService = null!;
 
-        public ArticleController(ArticleStore articleStore, UserStore userStore, ArticleService articleService)
+        public ArticleController(ArticleService articleService)
         {
-            this.articleStore = articleStore;
-            this.userStore = userStore;
             this.articleService = articleService;
         }
 
         [HttpGet]
-        public List<Article> List()
+        public async Task<List<Article>> List()
         {
-            return articleStore.Articles;
+            return await articleService.GetAll();
         }
 
         [HttpPost]
@@ -40,10 +36,9 @@ namespace MiniBlog.Controllers
         }
 
         [HttpGet("{id}")]
-        public Article GetById(Guid id)
+        public Article? GetById(Guid id)
         {
-            var foundArticle = articleStore.Articles.FirstOrDefault(article => article.Id == id);
-            return foundArticle;
+            return articleService.GetById(id);
         }
     }
 }
