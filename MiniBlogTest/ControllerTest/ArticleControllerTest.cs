@@ -50,7 +50,12 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async void Should_create_article_and_register_user_correct()
         {
-            var client = GetClient();
+            var client = GetClient(new ArticleStore(new List<Article>
+            {
+                new Article(null, "Happy new year", "Happy 2021 new year"),
+                new Article(null, "Happy Halloween", "Halloween is coming"),
+            }), new UserStore(new List<User>()));
+
             string userNameWhoWillAdd = "Tom";
             string articleContent = "What a good day today!";
             string articleTitle = "Good day";
@@ -75,7 +80,7 @@ namespace MiniBlogTest.ControllerTest
             var usersJson = await userResponse.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<User>>(usersJson);
 
-            Assert.Equal(1, users.Count);
+            Assert.True(users.Count == 1);
             Assert.Equal(userNameWhoWillAdd, users[0].Name);
             Assert.Equal("anonymous@unknow.com", users[0].Email);
         }
