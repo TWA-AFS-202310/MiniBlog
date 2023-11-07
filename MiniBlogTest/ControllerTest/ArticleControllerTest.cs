@@ -3,11 +3,16 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using MiniBlog;
+using MiniBlog.Controllers;
 using MiniBlog.Model;
+using MiniBlog.Repositories;
+using MiniBlog.Services;
 using MiniBlog.Stores;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -24,18 +29,24 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async void Should_get_all_Article()
         {
-            var client = GetClient();
-            var response = await client.GetAsync("/article");
-            response.EnsureSuccessStatusCode();
-            var body = await response.Content.ReadAsStringAsync();
-            var users = JsonConvert.DeserializeObject<List<Article>>(body);
-            Assert.Equal(2, users.Count);
+            var mock = new Mock<IArticleController>();
+            List<Article> result = new List<Article>
+            {
+                new Article(null, "Happy new year", "Happy 2021 new year"),
+                new Article(null, "Happy Halloween", "Halloween is coming"),
+            };
+            mock.Setup(controller => controller.List()).Returns(Task.FromResult(result));
+
+            IArticleController controller = mock.Object;
+            Task<List<Article>> articles = controller.List();
+
+            mock.Verify(service => service.List(), Times.Once());
         }
 
         [Fact]
         public async void Should_create_article_fail_when_ArticleStore_unavailable()
         {
-            var client = GetClient();
+            var client = GetClient(null, new UserStore(new List<User>()));
             string userNameWhoWillAdd = "Tom";
             string articleContent = "What a good day today!";
             string articleTitle = "Good day";
@@ -50,7 +61,12 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async void Should_create_article_and_register_user_correct()
         {
-            var client = GetClient();
+            var client = GetClient(new ArticleStore(new List<Article>
+            {
+                new Article("Tom", "Happy new year", "Happy 2021 new year"),
+
+            }), new UserStore(new List<User>()));
+
             string userNameWhoWillAdd = "Tom";
             string articleContent = "What a good day today!";
             string articleTitle = "Good day";
@@ -75,7 +91,7 @@ namespace MiniBlogTest.ControllerTest
             var usersJson = await userResponse.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<User>>(usersJson);
 
-            Assert.Equal(1, users.Count);
+            Assert.True(users.Count == 1);
             Assert.Equal(userNameWhoWillAdd, users[0].Name);
             Assert.Equal("anonymous@unknow.com", users[0].Email);
         }

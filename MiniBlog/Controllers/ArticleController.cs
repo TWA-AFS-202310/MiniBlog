@@ -5,51 +5,40 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MiniBlog.Model;
+using MiniBlog.Services;
 using MiniBlog.Stores;
 
 namespace MiniBlog.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ArticleController : ControllerBase
+    public class ArticleController : ControllerBase, IArticleController
     {
-        private readonly ArticleStore articleStore = null!;
-        private readonly UserStore userStore = null!;
+        private readonly ArticleService articleService = null!;
 
-        public ArticleController(ArticleStore articleStore, UserStore userStore)
+        public ArticleController(ArticleService articleService)
         {
-            this.articleStore = articleStore;
-            this.userStore = userStore;
+            this.articleService = articleService;
         }
 
         [HttpGet]
-        public List<Article> List()
+        public async Task<List<Article>> List()
         {
-            Console.WriteLine(articleStore.Articles);
-            return articleStore.Articles;
+            return await articleService.GetAll();
         }
 
         [HttpPost]
-        public IActionResult Create(Article article)
+        public async Task<IActionResult> Create(Article article)
         {
-            if (article.UserName != null)
-            {
-                if (!userStore.Users.Exists(_ => article.UserName == _.Name))
-                {
-                    userStore.Users.Add(new User(article.UserName));
-                }
+            var addedArticle = await articleService.CreateArticle(article);
 
-                articleStore.Articles.Add(article);
-            }
-
-            return CreatedAtAction(nameof(GetById), new { id = article.Id }, article);
+            return CreatedAtAction(nameof(GetById), new { id = article.Id }, addedArticle);
         }
 
         [HttpGet("{id}")]
-        public Article GetById(Guid id)
+        public Task<Article> GetById(string id)
         {
-            var foundArticle = articleStore.Articles.FirstOrDefault(article => article.Id == id);
-            return foundArticle;
+            return articleService.GetById(id);
         }
     }
 }
