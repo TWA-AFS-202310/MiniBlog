@@ -24,7 +24,7 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async void Should_get_all_Article()
         {
-            var client = GetClient();
+            var client = GetClient(new ArticleStore(), new UserStore(new List<User>()));
             var response = await client.GetAsync("/article");
             response.EnsureSuccessStatusCode();
             var body = await response.Content.ReadAsStringAsync();
