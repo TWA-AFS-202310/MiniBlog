@@ -30,7 +30,9 @@ namespace MiniBlogTest.ControllerTest
         public async Task Should_get_all_users()
         {
             // given
-            var client = GetClient(new ArticleStore(), new UserStore(new List<User>()));
+            var articleStore = new ArticleStore();
+            var userStore = new UserStore(new List<User>());
+            var client = GetClient(articleStore, userStore, articleStore, userStore);
 
             // when
             var response = await client.GetAsync("/user");
@@ -46,7 +48,10 @@ namespace MiniBlogTest.ControllerTest
         public async Task Should_register_user_success()
         {
             // given
-            var client = GetClient(new ArticleStore(), new UserStore(new List<User>()));
+            var articleStore = new ArticleStore();
+            var userStore = new UserStore(new List<User>());
+            var client = GetClient(articleStore, userStore, articleStore, userStore);
+
             var userName = "Tom";
             var email = "a@b.com";
             var user = new User(userName, email);
@@ -71,7 +76,8 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async Task Should_register_user_fail_when_UserStore_unavailable()
         {
-            var client = GetClient(new ArticleStore(), null);
+            var articleStore = new ArticleStore();
+            var client = GetClient(articleStore, null, articleStore, null);
 
             var userName = "Tom";
             var email = "a@b.com";
@@ -86,7 +92,9 @@ namespace MiniBlogTest.ControllerTest
         [Fact]
         public async Task Should_update_user_email_success_()
         {
-            var client = GetClient(new ArticleStore(), new UserStore(new List<User>()));
+            var articleStore = new ArticleStore();
+            var userStore = new UserStore(new List<User>());
+            var client = GetClient(articleStore, userStore, articleStore, userStore);
 
             var userName = "Tom";
             var originalEmail = "a@b.com";
@@ -104,7 +112,7 @@ namespace MiniBlogTest.ControllerTest
             response.EnsureSuccessStatusCode();
             var body = await response.Content.ReadAsStringAsync();
             var users = JsonConvert.DeserializeObject<List<User>>(body);
-            Assert.True(users.Count == 1);
+            Assert.Equal(1, users.Count);
             Assert.Equal(updatedEmail, users[0].Email);
             Assert.Equal(userName, users[0].Name);
         }
@@ -114,18 +122,18 @@ namespace MiniBlogTest.ControllerTest
         {
             // given
             var userName = "Tom";
-            var client = GetClient(
-                new ArticleStore(
+            var articleStore = new ArticleStore(
                     new List<Article>
                     {
                         new Article(userName, string.Empty, string.Empty),
                         new Article(userName, string.Empty, string.Empty),
-                    }),
-                new UserStore(
+                    });
+            var userStore = new UserStore(
                     new List<User>
                     {
                         new User(userName, string.Empty),
-                    }));
+                    });
+            var client = GetClient(articleStore, userStore, articleStore, userStore);
 
             var articlesResponse = await client.GetAsync("/article");
 

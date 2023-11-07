@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MiniBlog.Model;
+using MiniBlog.Repositories;
 
 namespace MiniBlog.Stores
 {
-    public class ArticleStore
+    public class ArticleStore : IArticleRepository
     {
         public ArticleStore()
         {
@@ -21,5 +23,21 @@ namespace MiniBlog.Stores
         }
 
         public List<Article> Articles { get; set; }
+
+        public Task CreateArticle(Article article)
+        {
+            Articles.Add(article);
+            return Task.CompletedTask;
+        }
+
+        public Task<List<Article>> GetAllArticles()
+        {
+            return Task.FromResult(Articles);
+        }
+
+        public Task<Article?> GetArticleById(string id)
+        {
+            return Task.FromResult(Articles.Find(a => a.Id == id));
+        }
     }
 }
