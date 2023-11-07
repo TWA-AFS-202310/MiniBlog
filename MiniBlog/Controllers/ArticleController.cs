@@ -28,9 +28,9 @@ namespace MiniBlog.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Article article)
+        public async Task<IActionResult> Create(Article article)
         {
-            var addedArticle = articleService.CreateArticle(article);
+            var addedArticle = await articleService.CreateArticle(article);
 
             return CreatedAtAction(nameof(GetById), new { id = article.Id }, addedArticle);
         }
