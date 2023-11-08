@@ -9,7 +9,7 @@ using Xunit;
 
 namespace MiniBlogTest.ServiceTest;
 
-public class ArticleServiceTest
+public class ArticleServiceTest_v2
 {
     [Fact]
     public async void Should_create_new_article_and_new_user_given_the_user_of_the_article_doesn_t_exist()
